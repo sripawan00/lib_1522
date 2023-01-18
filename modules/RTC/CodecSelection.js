@@ -40,7 +40,8 @@ export class CodecSelection {
 
         // Check if the codec values passed are valid.
         const jvbCodec = this._getCodecMimeType(options.jvbCodec);
-        const p2pCodec = this._getCodecMimeType(options.p2pCodec);
+        //const p2pCodec = this._getCodecMimeType(options.p2pCodec);
+        const p2pCodec = CodecMimeType.VP8;
 
         this.jvbPreferredCodec = jvbCodec && this._isCodecSupported(jvbCodec) ? jvbCodec : CodecMimeType.VP8;
         this.p2pPreferredCodec = p2pCodec && this._isCodecSupported(p2pCodec) ? p2pCodec : CodecMimeType.VP8;

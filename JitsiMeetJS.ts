@@ -38,6 +38,8 @@ import * as ConnectionQualityEvents
     from './service/connectivity/ConnectionQualityEvents';
 import * as E2ePingEvents from './service/e2eping/E2ePingEvents';
 import { createGetUserMediaEvent } from './service/statistics/AnalyticsEvents';
+/////////////////////////////
+import ConnectionData from './modules/util/connectionData';
 
 const logger = Logger.getLogger(__filename);
 
@@ -101,6 +103,12 @@ export default {
 
     JitsiConnection,
 
+///////////////////////////
+    getLocalConnectionData:ConnectionData.getLocalConnectionType,
+    setLocalConnectionData:ConnectionData.setLocalConnectionType,
+    getRemoteConnectionData:ConnectionData.getRemoteConnectionType,
+    setRemoteConnectionData:ConnectionData.setRemoteConnectionType,
+////////////////////////
     /**
      * {@code ProxyConnectionService} is used to connect a remote peer to a
      * local Jitsi participant without going through a Jitsi conference. It is

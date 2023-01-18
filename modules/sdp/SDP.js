@@ -7,6 +7,8 @@ import browser from '../browser';
 import FeatureFlags from '../flags/FeatureFlags';
 
 import SDPUtil from './SDPUtil';
+//////////////
+import ConnectionData from '../util/connectionData';
 
 /**
  *
@@ -354,6 +356,27 @@ SDP.prototype.toJingle = function(elem, thecreator) {
                 // TODO: handle params
                 elem.up();
             }
+////////////////////////
+            // Check for local connection type
+            let localConnectionType = ConnectionData.getLocalConnectionType();
+            let localBandwidth = undefined;
+            if(localConnectionType){
+                if(localConnectionType === 'wifi') {
+                    localBandwidth = 2000
+                }
+                else {
+                    localBandwidth = 600
+                }
+            }
+
+            if(localBandwidth){
+                const bandwidth = {value:localBandwidth, type:"AS"};
+                elem.c('bandwidth').t(bandwidth.value);
+                delete bandwidth.value;
+                elem.attrs(bandwidth);
+                elem.up(); // end of bandwidth
+            }
+////////////////////////
             elem.up(); // end of description
         }
 
@@ -592,8 +615,22 @@ SDP.prototype.fromJingle = function(jingle) {
      */
 
     this.raw = this.session + this.media.join('');
-};
 
+////////////////////
+    try {
+        if (logger) {
+            logger.error(`inytelog fromJingle output ${this.raw}`);
+        }
+        console.log('inytelog fromJingle output', this.raw);
+    }
+    catch (error) {
+        if (logger) {
+            logger.error(` inytelog fromJingle output ${this.raw}`);
+        }
+        console.log('inytelog fromJingle output', this.raw);
+    }
+};
+////////////////////
 // translate a jingle content element into an an SDP media part
 SDP.prototype.jingle2media = function(content) {
     const desc = content.find('>description');
@@ -626,7 +663,21 @@ SDP.prototype.jingle2media = function(content) {
                 .get();
         sdp += `${SDPUtil.buildMLine(media)}\r\n`;
     }
+////////////////////////    
+    if(bandwidth.length){
+    //  sdp+= 'b=AS:1000\r\n';
+        let connectionType = ConnectionData.getLocalConnectionType();
+        let remoteBandwidthValue = bandwidth.text();
 
+        sdp+= `b=AS:${remoteBandwidthValue}\r\n`;
+        if(Number(remoteBandwidthValue) > 1000){
+            ConnectionData.setRemoteConnectionType('wifi')
+        }
+        else{
+            ConnectionData.setRemoteConnectionType('4g')
+        }
+    }
+//////////////////////
     sdp += 'c=IN IP4 0.0.0.0\r\n';
     if (!sctp.length) {
         sdp += 'a=rtcp:1 IN IP4 0.0.0.0\r\n';
